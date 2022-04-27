@@ -114,7 +114,7 @@ class DNAToolKit():
             #print(f"longest orf is {max_orf}, it has a length of {max_orf_len} and starts at position {max_orf_start}")
             return max_orf, max_orf_len, max_orf_start
                    
-    def repeats(self, n, sequence):
+    def repeats(self, sequence, n):
         """Given a length n, this function identifies all repeats of length n in
         all sequences of a FASTA f
 
@@ -234,16 +234,75 @@ if __name__ == "__main__":
     # Find the most frequently occuring repeat of length 6 in all sequences. How
     # many times does it occur in all?
 
-    # total_repeats = 0
-    # max_repeats = 0
-    # most_frequent_repeat = ""
-    # for id, seq in toolkit.dict.items():
-    #     repeats = toolkit.repeats(6, seq)
-    #     for repeat, n in repeats.items():
-    #         total_repeats += n
-    #         if n > max_repeats:
-    #             max_repeats = n
-    #             most_frequent_repeat = repeat
+    max_repeat_global = 0
+    most_frequent_repeat = ""
+
+    # find the repeat that appears the most times in a sequence
+    for id, seq in toolkit.dict.items():
+        repeats = toolkit.repeats(seq, 6) # dict with all repeats of length 6 in sequence seq
+        max_repeat = max(repeats.values()) # get number of times the most frequent repeat appears in that seq
+        max_repeat_seq = max(repeats, key = repeats.get)
+        if max_repeat > max_repeat_global:
+            max_repeat_global = max_repeat
+            most_frequent_repeat = max_repeat_seq
+    
+    # find how many times that repeat appears in all other sequences
+    appearences = []
+    for id, seq in toolkit.dict.items():
+        appearences.append(re.findall(most_frequent_repeat, seq, overlapped=True))
+    
+    flat = [item for sublist in appearences for item in sublist]
+    
+    print(f"The most frequent repeat of length 6 is {most_frequent_repeat} repeats itself {len(flat)} times")
+    print("==================================================================\n") 
+    
+    # Q9
+    # Find all repeats of length 12 in the input file. Let's use Max to specify
+    # the number of copies of the most frequent repeat of length 12. How many
+    # different 12-base sequences occur Max times?
+    
+    Max = 0
+    all_repeats = {}
+    
+    # find all repeats of length 12:
+    for id, seq in toolkit.dict.items():
+        repeats = toolkit.repeats(seq, 12)
+        for repeat, n in repeats.items():
+            try:
+                all_repeats[repeat] += n
+            except KeyError:
+                all_repeats[repeat] = n # create key if it's the 1st time the repeat appears
+    Max = max(all_repeats.values())
+    
+    # how many different repeats occur Max times?
+    counter = 0
+    repeats = []
+    for repeat, n in all_repeats.items():
+        if n == Max:
+            counter += 1
+            repeats.append(repeat)
+        
+    print(
+        f"There are {counter} different repeats of length 12 that repeat themselves\
+        {Max} times and they are: {repeats}"
+    )
+    print("==================================================================\n")         
+    
+    # Q10
+    # Which one of the following repeats of length 7 has a maximum number of occurences
+    
+    CANDIDATES = {
+        "AATGGCA": 0,
+        "TGCGCGC": 0,
+        "CATCGCC": 0,
+        "CGCGCCG": 0
+    }
+    
+    for id, seq in toolkit.dict.items():
+        repeats = toolkit.repeats(seq, 7)
+        for repeat, n in repeats.items():
+            if repeat in CANDIDATES:
+                CANDIDATES[repeat] += n
                 
-    # print(f"The most frequent repeat of length 6 repeats itself {total_repeats} times")
-    # print("==================================================================\n")              
+    print(f"The repeat that appears the most times is {max(CANDIDATES, key=CANDIDATES.get)}")
+    print("==================================================================\n") 
