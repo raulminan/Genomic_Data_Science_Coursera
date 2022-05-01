@@ -1,5 +1,13 @@
 import matplotlib.pyplot as plt
-import numpy as np
+
+__author__ = "raulminan"
+
+""" 
+This script contains the code necessary to complete the homework for week 1
+of "Algorithms for DNA sequencing" course in Coursera, which is part of 
+the Genomic Data Science Specialization from the Johns Hopkins University.
+"""
+
 
 class hwWeek1():
     """Class to solve the homework for week 1 of Algorithms for DNA sequencing 
